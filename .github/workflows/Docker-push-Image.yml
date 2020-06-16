@@ -1,0 +1,16 @@
+name: Docker Image CI # Actions名称
+
+on: [push] # 执行时机
+
+jobs:
+
+  build: # 一个名叫build的任务（名字可以随便起）
+    runs-on: ubuntu-16.04 # 基于最新版Ubuntu系统执行下列任务
+    steps:
+    - uses: sunnyblog/licode@master # 将仓库内容拷贝到Ubuntu系统的虚拟环境
+    - name: Build the Docker image # 步骤名字
+      run: |
+        docker login --username=${{ secrets.ALIYUN_IMAGES_HUB_USER_NAME }} registry.ap-northeast-1.aliyuncs.com --password=${{ secrets.DOCKER_PWD }} # 登录docker，并使用Secret里配置的参数
+        docker build -t xingwen:latest . #执行构建
+        docker tag xingwen registry.ap-northeast-1.aliyuncs.com/example/xingwen
+        docker push registry.ap-northeast-1.aliyuncs.com/example/xingwen:latest # 推送
